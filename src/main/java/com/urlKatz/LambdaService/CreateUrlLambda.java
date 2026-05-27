@@ -24,11 +24,11 @@ public class CreateUrlLambda implements RequestHandler<Map<String, Object>, Map<
         String expirationTime = (String) input.get("expirationTime");
 
         DynamoDbClient dynamoDB = DynamoDbClient.builder()
-                .region(Region.of("us-east-1"))
+                .region(Region.of("sa-east-1"))
                 .build();
 
         Map<String, AttributeValue> item = new HashMap<>();
-        item.put("shortCode", AttributeValue.builder().s(shortUrl).build());
+        item.put("shortUrl", AttributeValue.builder().s(shortUrl).build());
         item.put("originalUrl", AttributeValue.builder().s(originalUrl).build());
         item.put("expirationTime", AttributeValue.builder().n(expirationTime).build());
 
@@ -40,10 +40,7 @@ public class CreateUrlLambda implements RequestHandler<Map<String, Object>, Map<
         dynamoDB.putItem(putItemRequest);
 
         return Map.of(
-                "originalUrl", originalUrl,
-                "expirationTime", expirationTime
+                "shortUrl", shortUrl
         );
     }
-
-
 }
