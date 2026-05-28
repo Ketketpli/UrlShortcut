@@ -6,6 +6,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,6 @@ public class RedirectLambda implements RequestHandler<Map<String, Object>, Map<S
                 .build();
 
         Map<String, AttributeValue> key = new HashMap<>();
-
         key.put("shortUrl", AttributeValue.builder().s(shortUrl).build());
 
         GetItemRequest getItemRequest = GetItemRequest.builder()
@@ -30,10 +30,13 @@ public class RedirectLambda implements RequestHandler<Map<String, Object>, Map<S
                 .key(key)
                 .build();
 
-        dynamoDB.getItem(getItemRequest);
+        GetItemResponse response = dynamoDB.getItem(getItemRequest);
+        Map<String, AttributeValue> item = response.item();
+        String originalUrl = item.get("originalUrl").s();
 
         return Map.of(
-                "shortUrl", shortUrl
+                "statusCode","302",
+                "originalUrl", originalUrl
         );
     }
 }

@@ -2,6 +2,8 @@ package com.urlKatz.LambdaService;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -20,8 +22,20 @@ public class CreateUrlLambda implements RequestHandler<Map<String, Object>, Map<
         UUID id = UUID.randomUUID();
         String shortUrl = id.toString().substring(0, 8);
 
-        String originalUrl = (String) input.get("originalUrl");
-        String expirationTime = (String) input.get("expirationTime");
+        String bodyString = (String) input.get("body");
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        Map<String, String> body =
+                null;
+        try {
+            body = mapper.readValue(bodyString, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        String originalUrl = body.get("originalUrl");
+        String expirationTime = body.get("expirationTime");
 
         DynamoDbClient dynamoDB = DynamoDbClient.builder()
                 .region(Region.of("sa-east-1"))
