@@ -49,10 +49,14 @@ public class RedirectLambda implements RequestHandler<Map<String, Object>, Map<S
         GetItemResponse result = dynamoDB.getItem(getItemRequest);
         Map<String, AttributeValue> item = result.item();
 
-        if(item.isEmpty()) {
+        try {
+            if(item.isEmpty()) {
+                throw new UrlNotFoundException("URL não encontrada!");
+            }
+        } catch (UrlNotFoundException e) {
             Map<String, Object> response = new HashMap<>();
             response.put("statusCode", 404);
-            response.put("body", "URL não encontrada!");
+            response.put("body", e.getMessage());
             return response;
         }
 
