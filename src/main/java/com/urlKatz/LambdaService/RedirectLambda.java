@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.urlKatz.LambdaService.LambdaException.UrlNotFoundException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -13,10 +14,10 @@ import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RedirectLambda implements RequestHandler<Map<String, Object>, Map<String, String>> {
+public class RedirectLambda implements RequestHandler<Map<String, Object>, Map<String, Object>> {
 
     @Override
-    public Map<String, String> handleRequest(Map<String, Object> input, Context context) {
+    public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
 
         String bodyString = (String) input.get("body");
 
@@ -44,8 +45,17 @@ public class RedirectLambda implements RequestHandler<Map<String, Object>, Map<S
                 .key(key)
                 .build();
 
-        GetItemResponse response = dynamoDB.getItem(getItemRequest);
-        Map<String, AttributeValue> item = response.item();
+
+        GetItemResponse result = dynamoDB.getItem(getItemRequest);
+        Map<String, AttributeValue> item = result.item();
+
+        if(item.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("statusCode", 404);
+            response.put("body", "URL não encontrada!");
+            return response;
+        }
+
         String originalUrl = item.get("originalUrl").s();
 
         return Map.of(
