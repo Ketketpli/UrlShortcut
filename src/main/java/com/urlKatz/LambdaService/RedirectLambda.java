@@ -2,6 +2,8 @@ package com.urlKatz.LambdaService;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -16,7 +18,19 @@ public class RedirectLambda implements RequestHandler<Map<String, Object>, Map<S
     @Override
     public Map<String, String> handleRequest(Map<String, Object> input, Context context) {
 
-        String shortUrl = (String) input.get("shortUrl");
+        String bodyString = (String) input.get("body");
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        Map<String, String> body =
+                null;
+        try {
+            body = mapper.readValue(bodyString, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        String shortUrl = body.get("shortUrl");
 
         DynamoDbClient dynamoDB = DynamoDbClient.builder()
                 .region(Region.of("sa-east-1"))
