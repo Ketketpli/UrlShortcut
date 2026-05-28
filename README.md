@@ -1,12 +1,12 @@
-# UrlShortcut 🔗
+# UrlShortcut
 
 Encurtador de links serverless construído com Java e AWS.
 
-## 📋 Sobre o Projeto
+## Sobre o Projeto
 
 API serverless que permite encurtar URLs longas e redirecionar usuários para a URL original através de um código curto único.
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 ```
 Usuário → API Gateway → Lambda (Java) → DynamoDB
@@ -18,7 +18,7 @@ Usuário → API Gateway → Lambda (Java) → DynamoDB
 | **API Gateway** | Expõe os endpoints HTTP |
 | **DynamoDB** | Armazena as URLs e seus códigos curtos |
 
-## 🚀 Endpoints
+## Endpoints
 
 ### Criar URL encurtada
 ```
@@ -52,17 +52,17 @@ GET /redirectUrl
 
 **Erro:** `404` → quando o código curto não existe
 
-## 🛠️ Tecnologias
+## Tecnologias
 
-- **Java 21**
-- **Maven**
-- **AWS Lambda**
-- **AWS API Gateway**
-- **AWS DynamoDB**
-- **Jackson** (parse de JSON)
-- **AWS SDK v2** (DynamoDB client)
+- Java 21
+- Maven
+- AWS Lambda
+- AWS API Gateway
+- AWS DynamoDB
+- Jackson (parse de JSON)
+- AWS SDK v2 (DynamoDB client)
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 src/
@@ -70,24 +70,24 @@ src/
     └── java/
         └── com/urlKatz/
             └── LambdaService/
-                ├── CreateUrlLambda.java       # Cria e salva a URL encurtada
-                ├── RedirectLambda.java        # Redireciona para a URL original
+                ├── CreateUrlLambda.java
+                ├── RedirectLambda.java
                 ├── LambdaDTO/
-                │   └── UrlData.java           # DTO com os dados da URL
+                │   └── UrlData.java
                 └── LambdaException/
-                    └── UrlNotFoundException.java  # Exceção personalizada
+                    └── UrlNotFoundException.java
 ```
 
-## ⚙️ Como funciona
+## Como funciona
 
 1. O usuário envia uma URL longa via `POST /createUrl`
 2. O sistema gera um código curto de 8 caracteres usando UUID
 3. A URL original, o código curto e o tempo de expiração são salvos no DynamoDB
-4. O usuário pode acessar `GET /redirectUrl` com o código curto
+4. O usuário acessa `GET /redirectUrl` com o código curto
 5. O sistema busca a URL original no DynamoDB e redireciona com status `302`
 6. Caso o código não exista, retorna `404` com mensagem de erro
 
-## 🚀 Deploy
+## Deploy
 
 ### Pré-requisitos
 - Java 21
@@ -117,10 +117,10 @@ Crie uma tabela com:
 
 ### Configurando o API Gateway
 Crie uma **HTTP API** com duas rotas:
-- `POST /createUrl` → integração com `createLambdaUrl`
-- `GET /redirectUrl` → integração com `redirectUrlLambda`
+- `POST /createUrl` integração com `createLambdaUrl`
+- `GET /redirectUrl` integração com `redirectUrlLambda`
 
-## 👤 Autor
+## Autor
 
 Paulo Henrique Rodrigues Varela  
 [github.com/Ketketpli](https://github.com/Ketketpli)
